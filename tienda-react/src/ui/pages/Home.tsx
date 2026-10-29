@@ -54,7 +54,7 @@ export function Home ( {esRespaldo, OnReintentar, productos, estado} : Props) {
                 onChange={(e) => setTermino(e.target.value)}
             />
             {estado === 'cargando' && (
-                <section className="flex flex-wrap gap-4">
+                <section className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
                     {Array.from({length : 8}).map((_, indice) => (
                         <SkeletonCard key={indice}/>
                     ))}
@@ -68,7 +68,7 @@ export function Home ( {esRespaldo, OnReintentar, productos, estado} : Props) {
                 }</p>
             )}
             {estado === 'listo' && (
-                <section>
+                <section className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
                 {
                     visibles.map((p) => <ProductCard producto={p} key={p.id} onAgregar={agregar}/>)
                 }
