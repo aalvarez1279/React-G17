@@ -2,7 +2,7 @@ import type { Pedido } from "../dominio/tipos";
 const CLAVE_PEDIDOS = 'tienda_pedidos';
 export function leerPedidos () : Pedido[] {
     try {
-        const crudo : unknown = JSON.parse(localStorage.getItem(CLAVE_PEDIDOS) ?? '[')
+        const crudo : unknown = JSON.parse(localStorage.getItem(CLAVE_PEDIDOS) ?? '[]')
         return Array.isArray(crudo) ? (crudo as Pedido []) : [];
     } catch (error) {
         return [];            
