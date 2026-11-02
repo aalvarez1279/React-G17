@@ -26,7 +26,10 @@ export default function Header ( {nombre , eslogan = "Tecnologia para todos"} : 
                         <button className="ml-2 underline" onClick={salir}>Salir</button>
                     </p>
                 ) : (
-                    <Link to="/login" className="text-sm underline">Inicie Sesion</Link>
+                    <p className="flex gap-3 text-sm">
+                        <Link to="/login" className="underline">Inicie Sesion</Link>
+                        <Link to="/registro" className="underline">Registrarse</Link>
+                    </p>
                 )
             }
         </header>

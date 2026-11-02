@@ -5,7 +5,8 @@ export function leerPedidos () : Pedido[] {
         const crudo : unknown = JSON.parse(localStorage.getItem(CLAVE_PEDIDOS) ?? '[]')
         return Array.isArray(crudo) ? (crudo as Pedido []) : [];
     } catch (error) {
-        return [];            
+        console.warn('No se pudieron leer los pedidos', error);
+        return [];
     }
 }
 

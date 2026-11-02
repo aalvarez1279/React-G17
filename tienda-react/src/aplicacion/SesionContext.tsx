@@ -25,13 +25,7 @@ export function SesionProvider({children} : {children : ReactNode}) {
     useEffect(() => {
         if(!usuario) return;
 
-        // 9:11 + 30 min = 9:41 - 9:30. 11 minutos.
         const restante = usuario.expiraEn - Date.now();
-        if(restante <= 0 ) { 
-            borrarSesion();
-            setUsuario(null);
-            return;
-        }
 
         const controlador = new AbortController();
         obtenerPerfil(usuario.token, controlador.signal).catch((error : unknown) => {

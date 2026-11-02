@@ -1,32 +1,51 @@
-# React + TypeScript + Vite
+# Tienda Tech
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Tienda en línea hecha con React + TypeScript + Vite + Tailwind CSS. Proyecto del bloque de React (Tecsup, Módulo 8).
 
-Currently, two official plugins are available:
+## Funcionalidades
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Catálogo de productos desde la API de [DummyJSON](https://dummyjson.com), con catálogo local de respaldo si la API falla.
+- Filtro por categoría y búsqueda por nombre o marca.
+- Detalle de producto por URL (`/producto/:id`) y página 404 propia.
+- Carrito guardado en `localStorage` (se mantiene al recargar).
+- Inicio de sesión con JWT (token Bearer) que expira a los 30 minutos.
+- Checkout protegido: solo con sesión iniciada, con validación por campo.
+- Páginas Detalle, Checkout y Login cargadas bajo demanda (`React.lazy`).
 
-## React Compiler
+## Cómo ejecutarlo
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+npm install
+cp .env.example .env     # en Windows: copy .env.example .env
+npm run dev
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+Abre http://localhost:5173
+
+Usuario de prueba de DummyJSON: `emilys` / `emilyspass`
+
+## Variables de entorno
+
+| Variable | Valor | Uso |
+| --- | --- | --- |
+| `VITE_API_URL` | `https://dummyjson.com` | URL base de la API de productos y login |
+
+## Estructura
+
+```
+src/
+  dominio/          Tipos y reglas del negocio (sin React)
+  infraestructura/  API, login y localStorage
+  aplicacion/       Context y hooks (useCart, useSesion, useProductos)
+  ui/               Páginas, componentes y layout
+```
+
+## Scripts
+
+- `npm run dev`: servidor de desarrollo
+- `npm run build`: compila TypeScript y genera `dist/`
+- `npm run lint`: revisa el código con oxlint
+
+## Despliegue
+
+Desplegado en Vercel. `vercel.json` redirige todas las rutas a `index.html` para que React Router funcione al recargar.

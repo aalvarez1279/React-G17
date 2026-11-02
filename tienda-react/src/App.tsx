@@ -1,66 +1,33 @@
-import { useState, useEffect } from "react"
-import type {EstadoCarga, Producto} from "./dominio/tipos"
-import { obtenerProductos } from "./infraestructura/api"
-import Detalle from './ui/pages/Detalle';
+import { lazy } from "react";
 import { Route, Routes } from "react-router-dom"
+import { useProductos } from "./aplicacion/useProductos";
 import { Home } from "./ui/pages/Home"
 import Layout from "./ui/layout/Layout"
 import NoEncontrada from "./ui/pages/NoEncontrada"
-import Checkout from "./ui/pages/Checkout"
-import Login from "./ui/pages/Login";
 import RutaProtegida from "./ui/components/RutaProtegida";
 
-export default function App() {
+const Detalle = lazy(() => import('./ui/pages/Detalle'));
+const Checkout = lazy(() => import('./ui/pages/Checkout'));
+const Login = lazy(() => import('./ui/pages/Login'));
+const Registro = lazy(() => import('./ui/pages/Registro'));
 
-  const [productos, setProductos] = useState<Producto[]>([]);
-  const [estado, setEstado] = useState<EstadoCarga>('cargando');
-  const [esRespaldo, setEsRespaldo] = useState(false);
-  const [intento, setIntento] = useState(0);
-  useEffect(() => {
-    const controlador = new AbortController();
-    async function cargar () {
-      try {
-        const resultado = await obtenerProductos();
-        setProductos(resultado.productos);
-        setEsRespaldo(resultado.esRespaldo);
-        setEstado('listo');
-      } catch (error) {
-        if(error instanceof DOMException && error.name === 'AbortError') return;
-        console.warn('Fallo imprevisto al cargar');
-        setEstado('error');
-      }
-    }
-    cargar();
-    return () => controlador.abort();
-  },[intento])
-  
+export default function App() {
+  const { productos, estado, esRespaldo, reintentar } = useProductos();
+
   return (
     <Routes>
-      <Route element = {
-        <Layout/>
-      }>
-        <Route path="/" element = {
-          <Home esRespaldo={esRespaldo} OnReintentar={() => {setIntento(intento + 1); setEstado('cargando')}}
-          productos={productos} estado={estado}/>
-        }
-        />
-        <Route  path="/producto/:id" element = {
-          <Detalle productos={productos}/>
-        }
-        />
-        <Route element={<RutaProtegida/>}>
-          <Route  path="/checkout" element = {
-            <Checkout/>
-          }
-          />
-        </Route>
-        <Route path="/login" element = {
-          <Login/>
+      <Route element={<Layout/>}>
+        <Route path="/" element={
+          <Home esRespaldo={esRespaldo} onReintentar={reintentar} productos={productos} estado={estado}/>
         }/>
+        <Route path="/producto/:id" element={<Detalle productos={productos} estado={estado}/>}/>
+        <Route element={<RutaProtegida/>}>
+          <Route path="/checkout" element={<Checkout/>}/>
+        </Route>
+        <Route path="/login" element={<Login/>}/>
+        <Route path="/registro" element={<Registro/>}/>
       </Route>
-      <Route path="*" element ={
-          <NoEncontrada/>
-      }/>
+      <Route path="*" element={<NoEncontrada/>}/>
     </Routes>
   )
 }

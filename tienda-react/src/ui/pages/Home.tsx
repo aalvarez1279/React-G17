@@ -1,18 +1,17 @@
 import { useEffect, useState } from "react";
-import type { EstadoCarga, Producto } from "../../dominio/tipos";
+import { NOMBRE_TIENDA, type EstadoCarga, type Producto } from "../../dominio/tipos";
 import SkeletonCard from "../components/SkeletonCard";
 import ProductCard from "../components/ProductCard";
 import { useCart } from "../../aplicacion/useCart";
 
 interface Props {
     esRespaldo : boolean ;
-    OnReintentar : () => void;
+    onReintentar : () => void;
     productos : Producto[];
     estado : EstadoCarga;
 }   
-const nombreTienda = 'Tienda Tech';
 
-export function Home ( {esRespaldo, OnReintentar, productos, estado} : Props) {
+export function Home ( {esRespaldo, onReintentar, productos, estado} : Props) {
     const {agregar} = useCart();
 
     const categorias = ['todas', ...new Set(productos.map(p => p.categoria))];
@@ -25,7 +24,7 @@ export function Home ( {esRespaldo, OnReintentar, productos, estado} : Props) {
         p.marca.toLowerCase().includes(busqueda))
     ));
     useEffect(() => {
-        document.title = `${nombreTienda} - ${visibles.length} resultados`;
+        document.title = `${NOMBRE_TIENDA} - ${visibles.length} resultados`;
     },[visibles.length]);
     
     return (
@@ -34,8 +33,7 @@ export function Home ( {esRespaldo, OnReintentar, productos, estado} : Props) {
                 esRespaldo && (
                     <p className="mb-4 rounded-lg border border-orange-300 bg-orange-500 p-2 text-sm">
                         Mostrando el catalogo Local, no pudimos conectar con la tienda.
-                        {/* () => {setIntento(intento + 1); setEstado('cargando')} OnReintentar*/} 
-                    <button className="ml-2 underline" onClick={OnReintentar}>Reintentar</button>
+                        <button className="ml-2 underline" onClick={onReintentar}>Reintentar</button>
                     </p>
                 )
             }
@@ -60,8 +58,13 @@ export function Home ( {esRespaldo, OnReintentar, productos, estado} : Props) {
                     ))}
                 </section>
             )}
-            {estado === 'error' && <p className="text-red-600">No pudimos cargar los productos</p>}
-            <p className="mb-4 text-sm text-gray-500">{visibles.length} productos</p>
+            {estado === 'error' && (
+                <p className="text-red-600">
+                    No pudimos cargar los productos.
+                    <button className="ml-2 underline" onClick={onReintentar}>Reintentar</button>
+                </p>
+            )}
+            {estado === 'listo' && <p className="mb-4 text-sm text-gray-500">{visibles.length} productos</p>}
             {estado === 'listo' && visibles.length === 0 && (
                 <p className="text-gray-500">{
                     busqueda !== '' ? `No encontramos productos para "${termino.trim()}"` : 'No hay productos en esta categoria'

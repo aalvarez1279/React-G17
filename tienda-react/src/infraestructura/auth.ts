@@ -1,7 +1,7 @@
-import type { Usuario } from "../dominio/tipos";
+import type { DatosRegistro, Usuario } from "../dominio/tipos";
 
 const BASE = import.meta.env.VITE_API_URL;
-const MINUTOS_SESION = 2;
+const MINUTOS_SESION = 30;
 interface RespuestaLogin {
     id: number;
     username: string;
@@ -26,7 +26,6 @@ export async function iniciarSesion(usuario : string, clave: string) : Promise<U
         email: data.email,
         token : data.accessToken,
         expiraEn: Date.now() + MINUTOS_SESION * 60 * 1000 
-        // 9:11 + 30 min
     }
 }
 
@@ -38,4 +37,26 @@ export async function obtenerPerfil (token : string, signal? : AbortSignal) : Pr
         signal
     });
     if(!r.ok) throw new Error (`Sesion rechazada por el servidor (HTTP ${r.status})`);
+}
+
+interface RespuestaRegistro {
+    id : number;
+    firstName : string;
+}
+
+// DummyJSON simula el alta: responde con un id nuevo, pero NO guarda el usuario.
+export async function registrarUsuario(datos : DatosRegistro) : Promise<RespuestaRegistro> {
+    const r = await fetch(`${BASE}/users/add`, {
+        method : 'POST',
+        headers : { 'Content-Type' : 'application/json' },
+        body : JSON.stringify({
+            firstName : datos.nombre.trim(),
+            lastName : datos.apellido.trim(),
+            username : datos.usuario,
+            email : datos.email.trim(),
+            password : datos.clave
+        })
+    });
+    if (!r.ok) throw new Error('No se pudo crear la cuenta. Intenta de nuevo.');
+    return (await r.json()) as RespuestaRegistro;
 }

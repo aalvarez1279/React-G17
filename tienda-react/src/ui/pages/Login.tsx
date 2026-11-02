@@ -1,16 +1,20 @@
 import { useState, type FormEvent } from "react"
 import { useSesion } from "../../aplicacion/useSesion";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 
 export default function Login() {
     const [usuario, setUsuario] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [enviando, setEnviando] = useState(false);
-    const {entrar} = useSesion();
+    const {usuario: sesion, entrar} = useSesion();
     const navegar = useNavigate();
     const ubicacion = useLocation();
     const desde = (ubicacion.state as {desde? : string} | null)?.desde ?? '/';
+
+    const incompleto = usuario.trim() === '' || password === '';
+
+    if (sesion) return <Navigate to={desde} replace/>;
 
     async function manejarEnvio(e : FormEvent) {
         e.preventDefault();
@@ -40,9 +44,12 @@ export default function Login() {
             </label>
             {error && <p className="text-sm text-red-600">{error}</p>}
             <button type="submit" className="rounded-full border px-4 py-2" 
-            disabled={enviando}>
+            disabled={enviando || incompleto}>
                 {enviando ? 'Entrando...' : 'Entrar'}
             </button>
+            <p className="text-sm">
+                ¿No tienes cuenta? <Link to="/registro" className="underline">Registrate</Link>
+            </p>
         </form>
     )
 }
